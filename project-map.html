@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3-Month Project Map</title>
+  <style>
+    :root {
+      --bg: #F8F7F5;
+      --surface: #FFFFFF;
+      --border: #E8E5DF;
+      --text-primary: #18181A;
+      --text-secondary: #5A5854;
+      --text-muted: #8C8A86;
+
+      --purple-light: #EEEDFE;
+      --purple-dark: #534AB7;
+      --green-light: #E1F5EE;
+      --green-dark: #1D9E75;
+      --coral-light: #FAECE7;
+      --coral-dark: #D85A30;
+      --blue-light: #E6F1FB;
+      --blue-dark: #378ADD;
+
+      --done-bg: #E1F5EE;     --done-fg: #0F6E56;
+      --prog-bg: #FAEEDA;     --prog-fg: #854F0B;
+      --hold-bg: #F1EFE8;     --hold-fg: #5F5E5A;
+      --ns-bg:   #FCEBEB;     --ns-fg:   #A32D2D;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111110;
+        --surface: #1B1B18;
+        --border: #2C2C28;
+        --text-primary: #F0EDE6;
+        --text-secondary: #9E9C96;
+        --text-muted: #6A6862;
+
+        --purple-light: #1E1B3A;  --purple-dark: #8078D6;
+        --green-light:  #0D2520;  --green-dark:  #28BF8C;
+        --coral-light:  #2B1810;  --coral-dark:  #E8724E;
+        --blue-light:   #0D1E30;  --blue-dark:   #5BA8EE;
+
+        --done-bg: #0D2520;  --done-fg: #28BF8C;
+        --prog-bg: #2B1E0A;  --prog-fg: #E8A840;
+        --hold-bg: #222220;  --hold-fg: #9E9C96;
+        --ns-bg:   #2B1010;  --ns-fg:   #E87070;
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.5;
+      padding: 36px 16px 72px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: 700px; margin: 0 auto; }
+
+    /* ── Page header ────────────────────────────── */
+    .page-header { margin-bottom: 32px; }
+
+    .page-title {
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+
+    .page-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ── Layer card ─────────────────────────────── */
+    .layer {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .layer-header {
+      display: flex;
+      align-items: stretch;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .stripe { width: 4px; flex-shrink: 0; }
+
+    .layer-hcontent {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 14px 16px 14px 14px;
+      gap: 12px;
+      min-width: 0;
+      transition: background 0.12s;
+    }
+
+    .layer-header:hover .layer-hcontent { background: var(--bg); }
+
+    .audience {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .title-group { flex: 1; min-width: 0; }
+
+    .layer-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .layer-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hright {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .count { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+    .chevron {
+      width: 16px; height: 16px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+
+    .layer.open .chevron { transform: rotate(180deg); }
+
+    /* ── Layer body ─────────────────────────────── */
+    .layer-body { display: none; border-top: 1px solid var(--border); }
+    .layer.open .layer-body { display: block; }
+
+    .body-inner { padding: 20px; }
+
+    .layer-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      padding: 12px 14px;
+      background: var(--bg);
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    /* ── Deliverables ───────────────────────────── */
+    .deliverables { list-style: none; display: flex; flex-direction: column; gap: 18px; margin-bottom: 18px; }
+
+    .deliverable { display: flex; gap: 11px; align-items: flex-start; }
+
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    .d-content { flex: 1; min-width: 0; }
+
+    .d-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .d-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+
+    .pill {
+      font-size: 10.5px;
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .pill-done  { background: var(--done-bg); color: var(--done-fg); }
+    .pill-prog  { background: var(--prog-bg); color: var(--prog-fg); }
+    .pill-hold  { background: var(--hold-bg); color: var(--hold-fg); }
+    .pill-ns    { background: var(--ns-bg);   color: var(--ns-fg); }
+
+    .d-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 9px;
+    }
+
+    .d-links { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .open-btn {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 5px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.12s, border-color 0.12s;
+    }
+
+    .open-btn:hover { color: var(--text-primary); border-color: var(--text-muted); }
+
+    .ext-icon { width: 10px; height: 10px; opacity: 0.55; }
+
+    /* ── Context note ───────────────────────────── */
+    .ctx {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 10px 13px;
+      border-left: 3px solid;
+      line-height: 1.6;
+    }
+
+    /* ── Layer colour sets ──────────────────────── */
+    .layer--purple .stripe    { background: var(--purple-dark); }
+    .layer--purple .audience  { background: var(--purple-light); color: var(--purple-dark); }
+    .layer--purple .dot       { background: var(--purple-dark); }
+    .layer--purple .ctx       { border-color: var(--purple-dark); }
+
+    .layer--green .stripe     { background: var(--green-dark); }
+    .layer--green .audience   { background: var(--green-light); color: var(--green-dark); }
+    .layer--green .dot        { background: var(--green-dark); }
+    .layer--green .ctx        { border-color: var(--green-dark); }
+
+    .layer--coral .stripe     { background: var(--coral-dark); }
+    .layer--coral .audience   { background: var(--coral-light); color: var(--coral-dark); }
+    .layer--coral .dot        { background: var(--coral-dark); }
+    .layer--coral .ctx        { border-color: var(--coral-dark); }
+
+    .layer--blue .stripe      { background: var(--blue-dark); }
+    .layer--blue .audience    { background: var(--blue-light); color: var(--blue-dark); }
+    .layer--blue .dot         { background: var(--blue-dark); }
+    .layer--blue .ctx         { border-color: var(--blue-dark); }
+
+    /* ── Connector ──────────────────────────────── */
+    .connector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      color: var(--text-muted);
+      font-size: 11px;
+      letter-spacing: 0.01em;
+    }
+
+    .c-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* ── Legend ─────────────────────────────────── */
+    .legend {
+      margin-top: 40px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+
+    .legend-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    .legend-item { display: flex; gap: 9px; align-items: flex-start; }
+
+    .legend-pill {
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 10.5px;
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: 100px;
+    }
+
+    .legend-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.45; }
+
+    /* ── Responsive ─────────────────────────────── */
+    @media (max-width: 540px) {
+      .layer-hcontent { flex-wrap: wrap; gap: 8px; }
+      .audience { order: 1; }
+      .title-group { order: 2; width: 100%; }
+      .hright { order: 3; }
+      .layer-sub { white-space: normal; }
+    }
+
+    @media (max-width: 380px) {
+      .legend-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page-header">
+    <h1 class="page-title">3-month project map</h1>
+    <p class="page-sub">Four interconnected work streams — click any layer to explore.</p>
+  </header>
+
+  <!-- ── Layer 1: Workshop ──────────────────────── -->
+  <div class="layer layer--purple" id="L1">
+    <div class="layer-header" onclick="toggle('L1')" aria-expanded="false">
+      <div class="stripe"></div>
+      <div class="layer-hcontent">
+        <span class="audience">Everyone</span>
+        <div class="title-group">
+          <div class="layer-name">The workshop</div>
+          <div class="layer-sub">Active synthesis of all streams</div>
+        </div>
+        <div class="hright">
+          <span class="count">0 / 3 done</span>
+          <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="layer-body" role="region">
+      <div class="body-inner">
+        <p class="layer-desc">The workshop is still actively being built — it's where prompt architecture, quality evaluation, and generation behaviour come together into something designers and PMs can engage with.</p>
+        <ul class="deliverables">
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Workshop deck</span>
+                <span class="pill pill-prog">In progress</span>
+              </div>
+              <p class="d-desc">The main session guide — how to run structured AI generation testing with the team.</p>
+              <div class="d-links">
+                <a href="https://canva.link/jnrvfkdnse73p50" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  Open <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Workshop reset plan + testing</span>
+                <span class="pill pill-prog">In progress</span>
+              </div>
+              <p class="d-desc">All the testing boards and examples used to build and validate the workshop content.</p>
+              <div class="d-links">
+                <a href="https://canva.link/cc179zrzls01x12" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  Open <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Cross-stream mapping</span>
+                <span class="pill pill-prog">In progress</span>
+              </div>
+              <p class="d-desc">A map of how all the work streams connect — so nothing gets lost and anyone can see the full picture.</p>
+              <div class="d-links">
+                <a href="https://canva.link/n8nuuiyqhwiwdry" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  Open <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+
+        </ul>
+        <p class="ctx">This is the surface layer. It's in progress because it draws directly from the three layers below — as those stabilise, the workshop develops with them.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector" aria-hidden="true"><span class="c-line"></span><span>↑ sits on top of ↓</span><span class="c-line"></span></div>
+
+  <!-- ── Layer 2: Prompt architecture ───────────── -->
+  <div class="layer layer--green" id="L2">
+    <div class="layer-header" onclick="toggle('L2')" aria-expanded="false">
+      <div class="stripe"></div>
+      <div class="layer-hcontent">
+        <span class="audience">Designers</span>
+        <div class="title-group">
+          <div class="layer-name">Prompt architecture</div>
+          <div class="layer-sub">Three tested generation modes</div>
+        </div>
+        <div class="hright">
+          <span class="count">3 / 4 done</span>
+          <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="layer-body" role="region">
+      <div class="body-inner">
+        <p class="layer-desc">Three tested generation modes — image-first, template-aware, and agentic — with documented frameworks for each. This is the layer that makes AI output controllable and repeatable, not random.</p>
+        <ul class="deliverables">
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Core framework</span>
+                <span class="pill pill-done">Done</span>
+              </div>
+              <p class="d-desc">The foundational rules for how prompts should be structured across all generation systems.</p>
+              <div class="d-links">
+                <a href="https://canva.link/taucthqbq1pkbr6" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  Open <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Image-first generation</span>
+                <span class="pill pill-done">Done</span>
+              </div>
+              <p class="d-desc">A prompt system built specifically for generating quality outputs when starting from an image.</p>
+              <div class="d-links">
+                <a href="https://canva.link/taucthqbq1pkbr6" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  Open <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Template-aware generation</span>
+                <span class="pill pill-done">Done</span>
+              </div>
+              <p class="d-desc">A prompt system that accounts for existing template structure so generation doesn't fight the layout.</p>
+              <div class="d-links">
+                <a href="https://canva.link/taucthqbq1pkbr6" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  Open <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Agentic orchestration</span>
+                <span class="pill pill-hold">On hold</span>
+              </div>
+              <p class="d-desc">Exploring how multiple AI actions can be chained together to handle more complex design tasks.</p>
+              <div class="d-links"></div>
+            </div>
+          </li>
+
+        </ul>
+        <p class="ctx">This layer directly feeds the workshop. The core frameworks are complete and ready to be built on.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector" aria-hidden="true"><span class="c-line"></span><span>↑ sits on top of ↓</span><span class="c-line"></span></div>
+
+  <!-- ── Layer 3: Quality evaluation ────────────── -->
+  <div class="layer layer--coral" id="L3">
+    <div class="layer-header" onclick="toggle('L3')" aria-expanded="false">
+      <div class="stripe"></div>
+      <div class="layer-hcontent">
+        <span class="audience">Designers + Engineers</span>
+        <div class="title-group">
+          <div class="layer-name">Quality evaluation system</div>
+          <div class="layer-sub">Making AI quality visible, not just felt</div>
+        </div>
+        <div class="hright">
+          <span class="count">2 / 4 done</span>
+          <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="layer-body" role="region">
+      <div class="body-inner">
+        <p class="layer-desc">Documented failure patterns, before/after comparison testing, and liberation testing observations. This is the layer that makes AI quality visible — not just felt.</p>
+        <ul class="deliverables">
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Liberation testing</span>
+                <span class="pill pill-done">Done</span>
+              </div>
+              <p class="d-desc">Testing how well AI-generated outputs hold up across different prompt types and design contexts.</p>
+              <div class="d-links">
+                <a href="https://canva.link/slz5ioipr0f40ut" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  Open <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Colour &amp; style evaluation</span>
+                <span class="pill pill-done">Done</span>
+              </div>
+              <p class="d-desc">Assessing whether the AI interprets colour and style directions consistently and as intended.</p>
+              <div class="d-links">
+                <a href="https://canva.link/tjamvyfbpfddlpw" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  Open <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Visual convergence behaviour</span>
+                <span class="pill pill-hold">On hold</span>
+              </div>
+              <p class="d-desc">Investigating why AI generation tends to produce similar-looking outputs even with varied prompts.</p>
+              <div class="d-links">
+                <a href="https://canva.link/hmvq57f6c6ef5j0" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  Part 1 <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+                <a href="https://canva.link/1uxzsmx3txm00vc" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  Part 2 <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Tension rubric</span>
+                <span class="pill pill-ns">Not started</span>
+              </div>
+              <p class="d-desc">A framework for evaluating where generation quality breaks down — when structure and creative behaviour pull in opposite directions.</p>
+              <div class="d-links"></div>
+            </div>
+          </li>
+
+        </ul>
+        <p class="ctx">This layer feeds both the workshop and engineering. The completed evaluations give the team something concrete to reference in quality discussions today.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector" aria-hidden="true"><span class="c-line"></span><span>↑ sits on top of ↓</span><span class="c-line"></span></div>
+
+  <!-- ── Layer 4: Generative systems ────────────── -->
+  <div class="layer layer--blue" id="L4">
+    <div class="layer-header" onclick="toggle('L4')" aria-expanded="false">
+      <div class="stripe"></div>
+      <div class="layer-hcontent">
+        <span class="audience">Engineers</span>
+        <div class="title-group">
+          <div class="layer-name">Generative systems intelligence</div>
+          <div class="layer-sub">Translating design observations for engineering</div>
+        </div>
+        <div class="hright">
+          <span class="count">1 / 3 done</span>
+          <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="layer-body" role="region">
+      <div class="body-inner">
+        <p class="layer-desc">Semantic activation routing, cultural signal translation, visual system intelligence mapping — translating design observations into things engineers can act on inside the generation system.</p>
+        <ul class="deliverables">
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Visual System Intelligence (MVP)</span>
+                <span class="pill pill-done">Done</span>
+              </div>
+              <p class="d-desc">Mapping how different visual styles and art direction choices actually activate and behave inside the AI system — 3 styles analysed for the workshop.</p>
+              <div class="d-links">
+                <a href="https://canva.link/ihxhfs3vls70iba" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  Open <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Semantic activation routing</span>
+                <span class="pill pill-hold">On hold</span>
+              </div>
+              <p class="d-desc">Understanding how the meaning of a prompt gets interpreted and routed — whether it pulls from templates, retrieval, or generation — and how to influence that.</p>
+              <div class="d-links">
+                <a href="https://canva.link/asbu3mjkf333x9i" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  File 1 <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+                <a href="https://canva.link/gxto4mp1s5botl3" target="_blank" rel="noopener noreferrer" class="open-btn">
+                  File 2 <svg class="ext-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10L10 2M4.5 2H10v5.5"/></svg>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="deliverable">
+            <div class="dot"></div>
+            <div class="d-content">
+              <div class="d-top">
+                <span class="d-label">Cultural signal translation layer</span>
+                <span class="pill pill-hold">On hold</span>
+              </div>
+              <p class="d-desc">Exploring how cultural taste and visual trends can be translated into directions the AI system can actually understand and act on.</p>
+              <div class="d-links"></div>
+            </div>
+          </li>
+
+        </ul>
+        <p class="ctx">This is the foundation layer. The Visual System Intelligence work is complete. The on-hold items are ready to move when the right engineering conversations are in place.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Legend ─────────────────────────────────── -->
+  <div class="legend">
+    <div class="legend-title">What the statuses mean</div>
+    <div class="legend-grid">
+      <div class="legend-item">
+        <span class="legend-pill pill-done">Done</span>
+        <p class="legend-desc">Required to produce for the workshop or prompt architecture — completed so the next layer could be built.</p>
+      </div>
+      <div class="legend-item">
+        <span class="legend-pill pill-prog">In progress</span>
+        <p class="legend-desc">Actively being built — the workshop is the current focus and these move as it develops.</p>
+      </div>
+      <div class="legend-item">
+        <span class="legend-pill pill-hold">On hold</span>
+        <p class="legend-desc">Tested enough to unblock the workshop, but needs more testing and documentation to be fully usable. Minimum viable version exists.</p>
+      </div>
+      <div class="legend-item">
+        <span class="legend-pill pill-ns">Not started</span>
+        <p class="legend-desc">Identified signals and ideas worth pursuing — parked intentionally while the workshop remains the priority.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggle(id) {
+    const el = document.getElementById(id);
+    const header = el.querySelector('.layer-header');
+    const isOpen = el.classList.toggle('open');
+    header.setAttribute('aria-expanded', isOpen);
+  }
+</script>
+</body>
+</html>

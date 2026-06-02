@@ -1,12 +1,27 @@
 import express from 'express';
 import cors from 'cors';
 import Anthropic from '@anthropic-ai/sdk';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { existsSync } from 'fs';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
+const IS_PROD = process.env.NODE_ENV === 'production';
 
-app.use(cors({ origin: ['http://localhost:5173', 'http://127.0.0.1:5173'] }));
+app.use(cors({
+  origin: IS_PROD
+    ? true
+    : ['http://localhost:5173', 'http://127.0.0.1:5173'],
+}));
 app.use(express.json({ limit: '10mb' }));
+
+// Serve built React app in production
+const staticPath = join(__dirname, '../client/dist');
+if (IS_PROD && existsSync(staticPath)) {
+  app.use(express.static(staticPath));
+}
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -427,6 +442,13 @@ app.post('/api/restructure', async (req, res) => {
     res.end();
   }
 });
+
+// SPA fallback — must be after API routes
+if (IS_PROD && existsSync(staticPath)) {
+  app.get('*', (_req, res) => {
+    res.sendFile(join(staticPath, 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Canva Prompt Studio server running on http://localhost:${PORT}`);

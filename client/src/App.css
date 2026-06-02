@@ -705,6 +705,137 @@ textarea, input, select {
   font-weight: 400;
 }
 
+/* ── Style System Cards (tag selector) ──── */
+.style-system-cards {
+  display: flex;
+  gap: 8px;
+}
+
+.style-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 6px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.style-card:hover {
+  border-color: var(--purple);
+  background: var(--purple-lighter);
+}
+
+.style-card--active {
+  border-color: var(--purple);
+  background: var(--purple-light);
+}
+
+.style-card-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.style-card-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gray-700);
+  line-height: 1.2;
+}
+
+.style-card--active .style-card-label {
+  color: var(--purple);
+}
+
+.style-card-desc {
+  font-size: 9px;
+  color: var(--gray-400);
+  line-height: 1.2;
+}
+
+/* ── Tag chips ───────────────────────────── */
+.section-row-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.form-hint {
+  font-size: 11px;
+  color: var(--gray-400);
+  font-weight: 400;
+}
+
+.tag-group {
+  gap: 8px;
+}
+
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-chip {
+  padding: 4px 10px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: var(--white);
+  cursor: pointer;
+  transition: all 0.12s;
+  line-height: 1.4;
+}
+
+.tag-chip:hover {
+  border-color: var(--purple);
+  color: var(--purple);
+  background: var(--purple-lighter);
+}
+
+.tag-chip--active {
+  border-color: var(--purple);
+  background: var(--purple-light);
+  color: var(--purple);
+  font-weight: 600;
+}
+
+.tag-custom-input {
+  margin-top: 2px;
+  font-size: 12px;
+  padding: 7px 10px;
+}
+
+.tags-empty-hint {
+  font-size: 12px;
+  color: var(--gray-300);
+  font-style: italic;
+}
+
+.assembled-prompt {
+  background: var(--gray-50);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--gray-700);
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.btn-xs {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
 /* ── Responsive ──────────────────────────── */
 @media (max-width: 900px) {
   .main-panels {

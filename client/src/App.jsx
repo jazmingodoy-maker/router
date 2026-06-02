@@ -8,6 +8,9 @@ const DEFAULT_STATE = {
   rawPrompt: '',
   generationSystem: '',
   model: 'claude-sonnet-4-6',
+  styleSystem: 'auto',
+  selectedTags: {},
+  customInputs: {},
 };
 
 export default function App() {

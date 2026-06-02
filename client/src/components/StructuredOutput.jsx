@@ -1,47 +1,58 @@
 import React, { useState } from 'react';
 
-const SECTIONS = ['PURPOSE', 'MOOD', 'AUDIENCE / BRAND FEEL', 'SUBJECT / SCENE', 'COMPOSITION / LAYOUT', 'COPY / TEXT', 'TYPOGRAPHY', 'COLOUR', 'AVOID'];
+const SECTION_LABELS = [
+  'PURPOSE',
+  'MOOD',
+  'AUDIENCE / BRAND FEEL',
+  'SUBJECT / SCENE',
+  'COMPOSITION / LAYOUT',
+  'COPY / TEXT',
+  'TYPOGRAPHY',
+  'COLOUR',
+  'AVOID',
+];
 
-function parseOutput(text) {
+function highlightSections(text) {
   if (!text) return null;
-  const result = {};
-  let currentSection = null;
-  let currentLines = [];
+  const parts = [];
+  let remaining = text;
+  let lastIndex = 0;
 
-  const lines = text.split('\n');
-  for (const line of lines) {
-    const trimmed = line.trim();
-    const matchedSection = SECTIONS.find(
-      (s) => trimmed === s || trimmed === s + ':' || trimmed.startsWith(s + '\n')
-    );
-    if (matchedSection) {
-      if (currentSection) result[currentSection] = currentLines.join('\n').trim();
-      currentSection = matchedSection;
-      currentLines = [];
-    } else if (currentSection) {
-      currentLines.push(line);
+  const allMatches = [];
+  for (const label of SECTION_LABELS) {
+    let idx = remaining.indexOf(label);
+    while (idx !== -1) {
+      allMatches.push({ idx, label, len: label.length });
+      idx = remaining.indexOf(label, idx + 1);
     }
   }
-  if (currentSection) result[currentSection] = currentLines.join('\n').trim();
-  return Object.keys(result).length >= 3 ? result : null;
-}
+  allMatches.sort((a, b) => a.idx - b.idx);
 
-const SECTION_COLORS = {
-  'PURPOSE': '#7C3AED',
-  'MOOD': '#8B5CF6',
-  'AUDIENCE / BRAND FEEL': '#9D4EDD',
-  'SUBJECT / SCENE': '#6D28D9',
-  'COMPOSITION / LAYOUT': '#5B21B6',
-  'COPY / TEXT': '#7C3AED',
-  'TYPOGRAPHY': '#8B5CF6',
-  'COLOUR': '#9D4EDD',
-  'AVOID': '#DC2626',
-};
+  const usedStarts = new Set();
+  let result = [];
+  let cursor = 0;
+
+  for (const match of allMatches) {
+    if (match.idx < cursor) continue;
+    if (match.idx > cursor) {
+      result.push(<span key={`txt-${cursor}`}>{remaining.slice(cursor, match.idx)}</span>);
+    }
+    result.push(
+      <span key={`lbl-${match.idx}`} className="prompt-section-label">
+        {match.label}
+      </span>
+    );
+    cursor = match.idx + match.len;
+  }
+  if (cursor < remaining.length) {
+    result.push(<span key={`txt-end`}>{remaining.slice(cursor)}</span>);
+  }
+
+  return result;
+}
 
 export default function StructuredOutput({ output, isRunning, usage, error, onClear }) {
   const [copied, setCopied] = useState(false);
-
-  const parsed = parseOutput(output);
 
   const handleCopy = () => {
     if (!output) return;
@@ -56,8 +67,12 @@ export default function StructuredOutput({ output, isRunning, usage, error, onCl
       <div className="panel-header">
         <span className="panel-title">Restructured Prompt</span>
         <div className="response-actions">
-          <button className={`btn btn-ghost ${copied ? 'copy-success' : ''}`} onClick={handleCopy} disabled={!output}>
-            {copied ? <><CheckIcon /> Copied</> : <><CopyIcon /> Copy</>}
+          <button
+            className={`btn btn-ghost ${copied ? 'copy-success' : ''}`}
+            onClick={handleCopy}
+            disabled={!output}
+          >
+            {copied ? <><CheckIcon /> Copied!</> : <><CopyIcon /> Copy all</>}
           </button>
           <button className="btn btn-ghost" onClick={onClear} disabled={!output && !error}>
             <ClearIcon /> Clear
@@ -65,38 +80,24 @@ export default function StructuredOutput({ output, isRunning, usage, error, onCl
         </div>
       </div>
 
-      <div className="panel-body response-body">
+      <div className="response-body">
         {error && <div className="error-message">{error}</div>}
 
         {!output && !error && !isRunning && (
           <div className="response-placeholder">
             <div className="response-placeholder-icon">✦</div>
-            <p>Enter a design brief and click <strong>Restructure Prompt</strong>.<br />Your structured Canva prompt will appear here.</p>
+            <p>Paste a Canva prompt on the left and click <strong>Restructure Prompt</strong>.</p>
+            <p className="response-placeholder-sub">The output will be a single continuous block, ready to copy directly into Canva AI.</p>
           </div>
         )}
 
         {(output || isRunning) && (
-          parsed && !isRunning ? (
-            <div className="structured-sections">
-              {SECTIONS.map((section) => {
-                const content = parsed[section];
-                if (!content) return null;
-                return (
-                  <div key={section} className="section-card">
-                    <div className="section-label" style={{ color: SECTION_COLORS[section] || '#7C3AED' }}>
-                      {section}
-                    </div>
-                    <div className="section-content">{content}</div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="response-raw">
-              {output}
+          <div className="prompt-output-block">
+            <div className="prompt-output-text">
+              {highlightSections(output)}
               {isRunning && <span className="streaming-cursor" />}
             </div>
-          )
+          </div>
         )}
       </div>
 

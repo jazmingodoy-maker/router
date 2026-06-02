@@ -31,7 +31,7 @@ export default function PromptLibrary({ state, output, onLoad }) {
     const entry = {
       id: Date.now().toString(),
       name,
-      rawBrief: state.rawBrief,
+      rawPrompt: state.rawPrompt,
       generationSystem: state.generationSystem,
       output: output || '',
       createdAt: new Date().toISOString(),
@@ -68,7 +68,7 @@ export default function PromptLibrary({ state, output, onLoad }) {
           <button
             className="btn btn-primary"
             onClick={handleSave}
-            disabled={!saveName.trim() || !state?.rawBrief?.trim()}
+            disabled={!saveName.trim() || !state?.rawPrompt?.trim()}
           >
             Save
           </button>
@@ -82,7 +82,7 @@ export default function PromptLibrary({ state, output, onLoad }) {
               <div key={entry.id} className="library-card">
                 <div className="library-card-info">
                   <div className="library-card-name">{entry.name}</div>
-                  <div className="library-card-preview">{entry.generationSystem} · {preview(entry.rawBrief)}</div>
+                  <div className="library-card-preview">{entry.generationSystem ? `${entry.generationSystem} · ` : ''}{preview(entry.rawPrompt)}</div>
                 </div>
                 <div className="library-card-actions">
                   <button

@@ -1,24 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
 const GENERATION_SYSTEMS = [
-  {
-    id: 'I2D',
-    label: 'Image-to-Design',
-    description: 'Composition created by model',
-    icon: '🖼',
-  },
-  {
-    id: 'Liberation',
-    label: 'Liberation',
-    description: 'Template-first generation',
-    icon: '📐',
-  },
-  {
-    id: 'CDA',
-    label: 'CDA / Canva AI',
-    description: 'Orchestration-first',
-    icon: '✨',
-  },
+  { id: '', label: 'Auto', description: 'Detect from prompt', icon: '⚡' },
+  { id: 'I2D', label: 'I2D', description: 'Image-to-Design', icon: '🖼' },
+  { id: 'Liberation', label: 'Liberation', description: 'Template-first', icon: '📐' },
+  { id: 'CDA', label: 'CDA / Canva AI', description: 'Orchestration-first', icon: '✨' },
 ];
 
 export default function BriefEditor({ state, onChange, onRestructure, isRunning }) {
@@ -40,8 +26,8 @@ export default function BriefEditor({ state, onChange, onRestructure, isRunning 
   return (
     <div className="panel editor-panel">
       <div className="panel-header">
-        <span className="panel-title">Design Brief</span>
-        <span className="panel-subtitle">Describe your design idea</span>
+        <span className="panel-title">Input Prompt</span>
+        <span className="panel-subtitle">Paste your Canva prompt</span>
       </div>
       <div className="panel-body">
 
@@ -64,12 +50,12 @@ export default function BriefEditor({ state, onChange, onRestructure, isRunning 
         </div>
 
         <div className="form-group" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <label className="form-label">Raw Brief</label>
+          <label className="form-label">Your Canva Prompt</label>
           <textarea
             className="form-textarea brief-textarea"
-            placeholder="Describe your design idea in plain language. e.g. 'I want a social post for my café opening — something that feels digital and cool but also warm and inviting. We're called Bloom Coffee. Soft opening this weekend.'"
-            value={state.rawBrief}
-            onChange={set('rawBrief')}
+            placeholder="Paste your existing Canva AI prompt here, or describe your design idea in plain language. The assistant will restructure it into a stronger, copy-paste-ready prompt."
+            value={state.rawPrompt}
+            onChange={set('rawPrompt')}
           />
         </div>
 
@@ -85,9 +71,11 @@ export default function BriefEditor({ state, onChange, onRestructure, isRunning 
         <button
           className="btn btn-primary btn-run"
           onClick={onRestructure}
-          disabled={isRunning || !state.rawBrief.trim()}
+          disabled={isRunning || !state.rawPrompt.trim()}
         >
-          {isRunning ? <><SpinnerIcon /> Restructuring...</> : <><MagicIcon /> Restructure Prompt</>}
+          {isRunning
+            ? <><SpinnerIcon /> Restructuring...</>
+            : <><MagicIcon /> Restructure Prompt</>}
         </button>
 
       </div>

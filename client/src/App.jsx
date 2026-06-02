@@ -5,8 +5,8 @@ import StructuredOutput from './components/StructuredOutput.jsx';
 import PromptLibrary from './components/PromptLibrary.jsx';
 
 const DEFAULT_STATE = {
-  rawBrief: '',
-  generationSystem: 'I2D',
+  rawPrompt: '',
+  generationSystem: '',
   model: 'claude-sonnet-4-6',
 };
 
@@ -18,7 +18,7 @@ export default function App() {
   const [error, setError] = useState('');
 
   const handleRestructure = async () => {
-    if (!state.rawBrief.trim()) return;
+    if (!state.rawPrompt.trim()) return;
 
     setIsRunning(true);
     setOutput('');
@@ -30,7 +30,7 @@ export default function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          rawBrief: state.rawBrief,
+          rawPrompt: state.rawPrompt,
           generationSystem: state.generationSystem,
           model: state.model,
         }),
@@ -77,8 +77,8 @@ export default function App() {
   const handleLoadSaved = (saved) => {
     setState((prev) => ({
       ...prev,
-      rawBrief: saved.rawBrief || '',
-      generationSystem: saved.generationSystem || 'I2D',
+      rawPrompt: saved.rawPrompt || '',
+      generationSystem: saved.generationSystem || '',
     }));
   };
 

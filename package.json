@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -p \"[{name}]\" -n \"server,client\" -c \"magenta,cyan\" \"node server.js\" \"vite\"",
-    "server": "node server.js",
-    "client": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "concurrently -k -p \"[{name}]\" -n \"server,client\" -c \"magenta,cyan\" \"node server/index.js\" \"vite --config client/vite.config.js --root client\"",
+    "server": "node server/index.js",
+    "client": "vite --config client/vite.config.js --root client",
+    "build": "cd client && npm install && npx vite build",
+    "start": "node server/index.js",
+    "preview": "vite preview --config client/vite.config.js --root client"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

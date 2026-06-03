@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canva Prompt Studio — Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --purple: #7C3AED;
+      --purple-dark: #6D28D9;
+      --purple-light: #EDE9FE;
+      --purple-lighter: #F5F3FF;
+      --white: #ffffff;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-300: #D1D5DB;
+      --gray-400: #9CA3AF;
+      --gray-500: #6B7280;
+      --gray-600: #4B5563;
+      --gray-700: #374151;
+      --gray-800: #1F2937;
+      --gray-900: #111827;
+      --green: #10B981;
+      --red: #EF4444;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-900);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+    button { font-family: inherit; cursor: pointer; border: none; outline: none; }
+    textarea, input, select { font-family: inherit; }
+
+    /* ── App Layout ── */
+    .app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .app-body { display: flex; flex: 1; overflow: hidden; flex-direction: column; }
+    .main-panels { display: flex; flex: 1; gap: 16px; padding: 16px; overflow: hidden; }
+
+    /* ── Header ── */
+    .header {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 24px;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+    }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .header-logo-icon {
+      width: 36px; height: 36px;
+      background: var(--purple);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 800; font-size: 18px; letter-spacing: -1px;
+      flex-shrink: 0;
+    }
+    .header-text { display: flex; flex-direction: column; }
+    .header-title { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+    .header-title span { color: var(--purple); }
+    .header-tagline { font-size: 12px; color: var(--gray-400); font-weight: 400; margin-top: 1px; }
+    .header-badge {
+      background: var(--purple-light); color: var(--purple);
+      font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 20px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+
+    /* ── Panel base ── */
+    .panel {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+    }
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .panel-title {
+      font-size: 13px; font-weight: 700;
+      color: var(--gray-700);
+      text-transform: uppercase; letter-spacing: 0.6px;
+    }
+    .panel-subtitle { font-size: 12px; color: var(--gray-400); font-weight: 400; }
+    .panel-body {
+      flex: 1; overflow-y: auto; padding: 20px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    /* ── Form elements ── */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 12px; font-weight: 600; color: var(--gray-600); letter-spacing: 0.3px; }
+    .form-textarea {
+      width: 100%; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+      padding: 10px 12px; font-size: 13px; color: var(--gray-900); background: var(--white);
+      resize: vertical; transition: border-color 0.15s, box-shadow 0.15s; line-height: 1.6;
+    }
+    .form-textarea:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+    .form-textarea::placeholder { color: var(--gray-400); }
+    .form-select {
+      width: 100%; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+      padding: 9px 12px; font-size: 13px; color: var(--gray-900); background: var(--white);
+      cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-select:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+    .form-input {
+      width: 100%; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+      padding: 9px 12px; font-size: 13px; color: var(--gray-900); background: var(--white);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 6px; padding: 9px 16px; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 600; cursor: pointer; border: none; white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: var(--purple); color: white;
+      box-shadow: 0 2px 8px rgba(124,58,237,0.35);
+    }
+    .btn-primary:hover { background: var(--purple-dark); box-shadow: 0 4px 12px rgba(124,58,237,0.45); transform: translateY(-1px); }
+    .btn-secondary { background: var(--gray-100); color: var(--gray-700); }
+    .btn-secondary:hover { background: var(--gray-200); }
+    .btn-ghost { background: transparent; color: var(--gray-500); padding: 6px 10px; }
+    .btn-ghost:hover { background: var(--gray-100); color: var(--gray-700); }
+    .btn-danger { background: transparent; color: var(--red); padding: 6px 10px; }
+    .btn-danger:hover { background: #FEF2F2; }
+    .btn-run { width: 100%; padding: 12px 20px; font-size: 14px; border-radius: var(--radius-sm); margin-top: 4px; }
+    .btn-xs { padding: 3px 8px; font-size: 11px; }
+
+    /* ── Editor panel ── */
+    .editor-panel { width: 360px; flex-shrink: 0; }
+    .response-panel { flex: 1; min-width: 0; }
+
+    /* ── Section row label / hints ── */
+    .section-row-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .form-hint { font-size: 11px; color: var(--gray-400); font-weight: 400; }
+
+    /* ── Style system cards ── */
+    .style-system-cards { display: flex; gap: 8px; }
+    .style-card {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 10px 6px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+      background: var(--white); cursor: pointer; transition: all 0.15s; text-align: center;
+    }
+    .style-card:hover { border-color: var(--purple); background: var(--purple-lighter); }
+    .style-card--active { border-color: var(--purple); background: var(--purple-light); }
+    .style-card-icon { font-size: 16px; line-height: 1; }
+    .style-card-label { font-size: 10px; font-weight: 700; color: var(--gray-700); line-height: 1.2; }
+    .style-card--active .style-card-label { color: var(--purple); }
+    .style-card-desc { font-size: 9px; color: var(--gray-400); line-height: 1.2; }
+
+    /* ── Tag chips ── */
+    .tag-group { gap: 8px; }
+    .tag-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag-chip {
+      padding: 4px 10px; border: 1.5px solid var(--gray-200); border-radius: 20px;
+      font-size: 12px; font-weight: 500; color: var(--gray-600); background: var(--white);
+      cursor: pointer; transition: all 0.12s; line-height: 1.4;
+    }
+    .tag-chip:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-lighter); }
+    .tag-chip--active { border-color: var(--purple); background: var(--purple-light); color: var(--purple); font-weight: 600; }
+    .tag-custom-input { margin-top: 2px; font-size: 12px; padding: 7px 10px; }
+
+    /* ── Assembled prompt preview ── */
+    .assembled-prompt {
+      background: var(--gray-50); border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm); padding: 10px 12px;
+      font-size: 13px; color: var(--gray-700); line-height: 1.6; word-break: break-word;
+    }
+
+    /* ── Generation system cards ── */
+    .system-cards { display: flex; gap: 8px; }
+    .system-card {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 10px 8px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+      background: var(--white); cursor: pointer; transition: all 0.15s; text-align: center;
+    }
+    .system-card:hover { border-color: var(--purple); background: var(--purple-lighter); }
+    .system-card--active { border-color: var(--purple); background: var(--purple-light); }
+    .system-card-icon { font-size: 18px; line-height: 1; }
+    .system-card-label { font-size: 11px; font-weight: 700; color: var(--gray-700); line-height: 1.2; }
+    .system-card--active .system-card-label { color: var(--purple); }
+    .system-card-desc { font-size: 10px; color: var(--gray-400); line-height: 1.2; }
+
+    /* ── Right panel body ── */
+    .response-body {
+      flex: 1; overflow-y: auto; padding: 24px;
+      display: flex; flex-direction: column;
+    }
+    .response-actions { display: flex; gap: 8px; }
+
+    /* ── Structured output block ── */
+    .prompt-output-block {
+      background: var(--gray-50); border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm); padding: 20px;
+    }
+    .prompt-output-text {
+      font-size: 14px; line-height: 1.8; color: var(--gray-700);
+      word-break: break-word; white-space: pre-wrap;
+    }
+    .prompt-section-label {
+      font-weight: 800; color: var(--purple); font-size: 13px; letter-spacing: 0.2px;
+    }
+
+    /* ── Usage bar ── */
+    .usage-bar {
+      display: flex; align-items: center; gap: 16px;
+      padding: 12px 20px; border-top: 1px solid var(--gray-100);
+      background: var(--gray-50); flex-shrink: 0;
+    }
+    .usage-item { display: flex; align-items: center; gap: 6px; }
+    .usage-label { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; }
+    .usage-value { font-size: 12px; font-weight: 700; color: var(--purple); }
+    .usage-divider { width: 1px; height: 16px; background: var(--gray-200); }
+
+    /* ── Bottom Library ── */
+    .bottom-section { padding: 0 16px 16px; flex-shrink: 0; }
+    .library-panel { max-height: 108px; }
+    .library-panel .panel-body {
+      flex-direction: row; gap: 12px; padding: 12px 20px;
+      align-items: center; overflow-x: auto; flex: none; max-height: 108px;
+    }
+    .library-save-row { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+    .library-save-row .form-input { width: 150px; }
+    .library-divider { width: 1px; height: 48px; background: var(--gray-200); flex-shrink: 0; }
+    .library-list { display: flex; flex-wrap: nowrap; gap: 8px; flex: 1; overflow-x: auto; }
+    .library-card {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--gray-50); border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm); padding: 8px 12px;
+      transition: all 0.15s; min-width: 210px; max-width: 270px; flex-shrink: 0;
+    }
+    .library-card:hover { border-color: var(--purple); background: var(--purple-lighter); }
+    .library-card-info { flex: 1; min-width: 0; }
+    .library-card-name { font-size: 13px; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .library-card-preview { font-size: 11px; color: var(--gray-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+    .library-card-actions { display: flex; gap: 2px; flex-shrink: 0; }
+    .library-card-actions .btn { padding: 4px 8px; font-size: 11px; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ═══ Header ═══ -->
+  <header class="header">
+    <div class="header-left">
+      <div class="header-logo-icon">✦</div>
+      <div class="header-text">
+        <div class="header-title">Canva <span>Prompt Studio</span></div>
+        <div class="header-tagline">Structured prompt engineering for Canva AI</div>
+      </div>
+    </div>
+    <span class="header-badge">Beta</span>
+  </header>
+
+  <div class="app-body">
+    <div class="main-panels">
+
+      <!-- ═══ Left Panel: Brief Editor ═══ -->
+      <div class="panel editor-panel">
+        <div class="panel-header">
+          <span class="panel-title">Build Your Prompt</span>
+          <span class="panel-subtitle">select tags or describe freely</span>
+        </div>
+        <div class="panel-body">
+
+          <!-- Style System -->
+          <div class="form-group">
+            <div class="section-row-label">
+              <span class="form-label">Style System</span>
+              <span class="form-hint">filters available tags</span>
+            </div>
+            <div class="style-system-cards">
+              <button class="style-card" type="button">
+                <span class="style-card-icon">⚡</span>
+                <span class="style-card-label">Auto</span>
+                <span class="style-card-desc">Inferred from your input</span>
+              </button>
+              <button class="style-card style-card--active" type="button">
+                <span class="style-card-icon">✦</span>
+                <span class="style-card-label">Handcraft Chic</span>
+                <span class="style-card-desc">Editorial curation</span>
+              </button>
+              <button class="style-card" type="button">
+                <span class="style-card-icon">◆</span>
+                <span class="style-card-label">Geometric Dopamine</span>
+                <span class="style-card-desc">Modular brand</span>
+              </button>
+              <button class="style-card" type="button">
+                <span class="style-card-icon">◎</span>
+                <span class="style-card-label">Lo-Fi UI</span>
+                <span class="style-card-desc">Ambient interface</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Subject / Scene -->
+          <div class="form-group tag-group">
+            <div class="section-row-label">
+              <span class="form-label">Subject / Scene</span>
+              <span class="form-hint">what is it?</span>
+            </div>
+            <div class="tag-chips">
+              <button class="tag-chip tag-chip--active" type="button">lifestyle photograph</button>
+              <button class="tag-chip" type="button">still-life object</button>
+              <button class="tag-chip" type="button">editorial portrait</button>
+              <button class="tag-chip" type="button">cropped physical print</button>
+              <button class="tag-chip" type="button">archival insert</button>
+              <button class="tag-chip" type="button">tactile surface detail</button>
+              <button class="tag-chip" type="button">documentary moment</button>
+              <button class="tag-chip" type="button">personal archive photo</button>
+            </div>
+            <input class="form-input tag-custom-input" type="text" placeholder="Add your own subject / scene…" />
+          </div>
+
+          <!-- Mood & Tone -->
+          <div class="form-group tag-group">
+            <div class="section-row-label">
+              <span class="form-label">Mood &amp; Tone</span>
+              <span class="form-hint">emotional register</span>
+            </div>
+            <div class="tag-chips">
+              <button class="tag-chip tag-chip--active" type="button">quiet</button>
+              <button class="tag-chip" type="button">intimate</button>
+              <button class="tag-chip" type="button">slow</button>
+              <button class="tag-chip" type="button">curated</button>
+              <button class="tag-chip" type="button">restrained</button>
+              <button class="tag-chip" type="button">human</button>
+              <button class="tag-chip" type="button">premium</button>
+              <button class="tag-chip" type="button">thoughtful</button>
+              <button class="tag-chip" type="button">editorial</button>
+            </div>
+            <input class="form-input tag-custom-input" type="text" placeholder="Add your own mood &amp; tone…" />
+          </div>
+
+          <!-- Colour Palette -->
+          <div class="form-group tag-group">
+            <div class="section-row-label">
+              <span class="form-label">Colour Palette</span>
+              <span class="form-hint">use design language</span>
+            </div>
+            <div class="tag-chips">
+              <button class="tag-chip tag-chip--active" type="button">warm neutrals</button>
+              <button class="tag-chip" type="button">soft beige</button>
+              <button class="tag-chip" type="button">dusty pinks</button>
+              <button class="tag-chip" type="button">washed whites</button>
+              <button class="tag-chip" type="button">muted earthy tones</button>
+              <button class="tag-chip" type="button">low saturation</button>
+              <button class="tag-chip" type="button">warm off-white</button>
+              <button class="tag-chip" type="button">greige</button>
+            </div>
+            <input class="form-input tag-custom-input" type="text" placeholder="Add your own colour palette…" />
+          </div>
+
+          <!-- Composition -->
+          <div class="form-group tag-group">
+            <div class="section-row-label">
+              <span class="form-label">Composition</span>
+              <span class="form-hint">spatial arrangement</span>
+            </div>
+            <div class="tag-chips">
+              <button class="tag-chip" type="button">single focal object</button>
+              <button class="tag-chip" type="button">soft asymmetry</button>
+              <button class="tag-chip" type="button">generous breathing room</button>
+              <button class="tag-chip" type="button">restrained layering</button>
+              <button class="tag-chip" type="button">editorial restraint</button>
+              <button class="tag-chip" type="button">object-centred</button>
+              <button class="tag-chip" type="button">modular spacing</button>
+              <button class="tag-chip" type="button">image-led storytelling</button>
+            </div>
+            <input class="form-input tag-custom-input" type="text" placeholder="Add your own composition…" />
+          </div>
+
+          <!-- Typography -->
+          <div class="form-group tag-group">
+            <div class="section-row-label">
+              <span class="form-label">Typography</span>
+              <span class="form-hint">type character &amp; role</span>
+            </div>
+            <div class="tag-chips">
+              <button class="tag-chip" type="button">small editorial type</button>
+              <button class="tag-chip" type="button">refined serif accents</button>
+              <button class="tag-chip" type="button">restrained sans serif</button>
+              <button class="tag-chip" type="button">archival annotation</button>
+              <button class="tag-chip" type="button">quiet hierarchy</button>
+              <button class="tag-chip" type="button">metadata-style labels</button>
+            </div>
+            <input class="form-input tag-custom-input" type="text" placeholder="Add your own typography…" />
+          </div>
+
+          <!-- Assembled Prompt preview -->
+          <div class="form-group">
+            <div class="section-row-label">
+              <span class="form-label">Assembled Prompt</span>
+              <button class="btn btn-ghost btn-xs" type="button">Clear all</button>
+            </div>
+            <div class="assembled-prompt">Subject / Scene: lifestyle photograph. Mood &amp; Tone: quiet. Colour Palette: warm neutrals.</div>
+          </div>
+
+          <!-- Generation System -->
+          <div class="form-group">
+            <div class="section-row-label">
+              <span class="form-label">Generation System</span>
+              <span class="form-hint">Canva model</span>
+            </div>
+            <div class="system-cards">
+              <button class="system-card" type="button">
+                <span class="system-card-icon">⚡</span>
+                <span class="system-card-label">Auto</span>
+                <span class="system-card-desc">Detect from prompt</span>
+              </button>
+              <button class="system-card" type="button">
+                <span class="system-card-icon">🖼</span>
+                <span class="system-card-label">I2D</span>
+                <span class="system-card-desc">&nbsp;</span>
+              </button>
+              <button class="system-card system-card--active" type="button">
+                <span class="system-card-icon">📐</span>
+                <span class="system-card-label">Liberation</span>
+                <span class="system-card-desc">&nbsp;</span>
+              </button>
+              <button class="system-card" type="button">
+                <span class="system-card-icon">✨</span>
+                <span class="system-card-label">CDA / Canva AI</span>
+                <span class="system-card-desc">&nbsp;</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Model selector -->
+          <div class="form-group">
+            <label class="form-label">Model</label>
+            <select class="form-select">
+              <option selected>Claude Sonnet 4.6 (Recommended)</option>
+              <option>Claude Opus 4.8</option>
+              <option>Claude Haiku 4.5</option>
+            </select>
+          </div>
+
+          <!-- Action button -->
+          <button class="btn btn-primary btn-run" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+            </svg>
+            Restructure Prompt
+          </button>
+
+        </div>
+      </div><!-- /editor-panel -->
+
+      <!-- ═══ Right Panel: Structured Output ═══ -->
+      <div class="panel response-panel">
+        <div class="panel-header">
+          <span class="panel-title">Restructured Prompt</span>
+          <div class="response-actions">
+            <button class="btn btn-ghost" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copy all
+            </button>
+            <button class="btn btn-ghost" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="response-body">
+          <div class="prompt-output-block">
+            <div class="prompt-output-text"><span class="prompt-section-label">PURPOSE</span>: A lifestyle campaign image for a premium homewares brand — quiet, editorial, tactile. Designed to lead a hero banner or editorial spread for a seasonal collection launch. The image should feel curated, not constructed.
+
+<span class="prompt-section-label">MOOD</span>: Quiet, intimate, slow-living. Emotionally restrained with a sense of warmth. Not aspirational in a loud way — more like a found moment, personal and unhurried. The mood of a Sunday morning before the world wakes up.
+
+<span class="prompt-section-label">AUDIENCE / BRAND FEEL</span>: Design-literate adults aged 28–45 who value craft, provenance, and considered aesthetics. The brand occupies the space between high-street accessible and luxury — premium without ostentation. Familiar with editorial style references like Kinfolk, Cereal, and Apartamento.
+
+<span class="prompt-section-label">SUBJECT / SCENE</span>: A lifestyle photograph centred on a single handmade ceramic vessel placed on a linen surface near a window. Morning light falls softly across the scene. A dried botanical element rests nearby. No hands, no people — the object speaks for itself. Subtle surface textures are foregrounded.
+
+<span class="prompt-section-label">COMPOSITION / LAYOUT</span>: Object-centred with generous breathing room. Soft asymmetry — the vessel placed slightly off-centre to the left. Negative space is intentional and active. Portrait-oriented with space at the top for a headline overlay. Low horizon, intimate perspective.
+
+<span class="prompt-section-label">COPY / TEXT</span>: Headline: "Made slowly. Kept long." — set in a refined serif, small scale, positioned in the upper third. A secondary metadata label reads "Collection No. 4 — Spring". No further body copy in this frame.
+
+<span class="prompt-section-label">TYPOGRAPHY</span>: Small editorial type. Refined serif accents for the headline. Metadata-style labelling for secondary information. All type restrained in size and weight — never competing with the image. Generous tracking on label text.
+
+<span class="prompt-section-label">COLOUR</span>: Warm neutrals throughout. Linen, greige, warm off-white, muted earthy tones. Low saturation — no bright accents. The ceramic may carry a soft blush or sage glaze that reads quietly within the neutral field. Warm light temperature throughout.
+
+<span class="prompt-section-label">AVOID</span>: Busy backgrounds, pattern-heavy surfaces, high saturation, bright or cold lighting, lifestyle clichés (coffee cups, laptops, flat-lays with too many objects), overly styled scenes, stock-photograph feel, visible branding or logos, heavy drop shadows, modern sans-serif type at large scale.</div>
+          </div>
+        </div>
+
+        <div class="usage-bar">
+          <div class="usage-item">
+            <span class="usage-label">Input</span>
+            <span class="usage-value">312 tokens</span>
+          </div>
+          <div class="usage-divider"></div>
+          <div class="usage-item">
+            <span class="usage-label">Output</span>
+            <span class="usage-value">487 tokens</span>
+          </div>
+          <div class="usage-divider"></div>
+          <div class="usage-item">
+            <span class="usage-label">Model</span>
+            <span class="usage-value">Claude Sonnet 4.6</span>
+          </div>
+        </div>
+      </div><!-- /response-panel -->
+
+    </div><!-- /main-panels -->
+
+    <!-- ═══ Bottom: Prompt Library ═══ -->
+    <div class="bottom-section">
+      <div class="panel library-panel">
+        <div class="panel-header" style="padding: 10px 20px; min-height: 0;">
+          <span class="panel-title">Prompt Library</span>
+          <span class="panel-subtitle">2 saved prompts</span>
+        </div>
+        <div class="panel-body">
+          <div class="library-save-row">
+            <input class="form-input" type="text" placeholder="Name this prompt…" />
+            <button class="btn btn-secondary" type="button" style="white-space: nowrap; flex-shrink: 0;">Save current</button>
+          </div>
+          <div class="library-divider" style="width: 1px; height: 48px; background: var(--gray-200); flex-shrink: 0;"></div>
+          <div class="library-list">
+
+            <div class="library-card">
+              <div class="library-card-info">
+                <div class="library-card-name">Handcraft Hero — Spring</div>
+                <div class="library-card-preview">Subject / Scene: lifestyle photograph. Mood: quiet. Colour: warm neutrals…</div>
+              </div>
+              <div class="library-card-actions">
+                <button class="btn btn-ghost btn-xs" type="button">Load</button>
+                <button class="btn btn-danger btn-xs" type="button">✕</button>
+              </div>
+            </div>
+
+            <div class="library-card">
+              <div class="library-card-info">
+                <div class="library-card-name">Geometric — Product Launch</div>
+                <div class="library-card-preview">Subject / Scene: hero product object. Mood: playful, energetic…</div>
+              </div>
+              <div class="library-card-actions">
+                <button class="btn btn-ghost btn-xs" type="button">Load</button>
+                <button class="btn btn-danger btn-xs" type="button">✕</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div><!-- /bottom-section -->
+
+  </div><!-- /app-body -->
+</div><!-- /app -->
+</body>
+</html>
